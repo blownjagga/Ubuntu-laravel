@@ -1,0 +1,23 @@
+---
+- name: Deploy PHP App on Slave
+  hosts: Slave
+  tasks:
+    - name: Copy bash script to the Slave node
+      copy:
+        src: deploy_lamp.sh
+        dest: /tmp/deploy_lamp.sh
+      become: yes
+
+    - name: Execute the bash script
+      shell: /tmp/deploy_lamp.sh
+      become: yes
+
+- name: Configure Cron Job
+  hosts: Slave
+  tasks:
+    - name: Add a cron job to check server uptime every day at 12 AM
+      cron:
+        name: CheckUptime
+        minute: 0
+        hour: 0
+        job: /usr/bin/uptime > /var/log/uptime.log
